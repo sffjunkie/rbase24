@@ -2,6 +2,8 @@
 
 A command line tool to print base16/base24 color schemes to the terminal.
 
+Best installed using [`pipx`](https://pypi.org/project/pipx/) or your Python installer of choice.
+
 To specify the location of the color scheme files either...
 
 1. Set the `BASE24_SCHEME_DIR` environment variable to point to the directory
