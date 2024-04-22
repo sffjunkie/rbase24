@@ -1,0 +1,44 @@
+[project]
+name = "rbase24"
+version = "0.1.0"
+description = "base16/base24 terminal viewer"
+authors = [{ name = "Simon Kennedy", email = "sffjunkie+code@gmail.com" }]
+dependencies = [
+    "rich>=13.7.1",
+    "pyyaml>=6.0.1",
+    "unicode-slugify>=0.1.5",
+    "typer>=0.12.3",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = { text = "MIT" }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[project.scripts]
+rbase24 = "rbase24.cli:main"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = ["pytest>=8.1.1"]
+
+[tool.pytest.ini_options]
+markers = ["unit", "integration", "asyncio"]
+pythonpath = ["src"]
+junit_family = "xunit2"
+norecursedirs = [
+    ".direnv",
+    ".venv",
+    ".git",
+    ".tox",
+    ".cache",
+    ".settings",
+    "dist",
+    "build",
+    "docs",
+]
