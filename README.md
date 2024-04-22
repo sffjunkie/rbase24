@@ -24,6 +24,4 @@ rbase24 primer
 
 Displays the following
 
-![console output](./swappy-20240422-174952.png)
-
-<!-- https://github.com/sffjunkie/rbase24/blob/main/src/doc/swappy-20240422-174952.png -->
+![console output](https://github.com/sffjunkie/rbase24/blob/main/src/doc/swappy-20240422-174952.png)
