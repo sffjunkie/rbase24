@@ -21,7 +21,7 @@ class Base24ViewerConfig:
         if cf is None:
             return default_dir
 
-        scheme_dir = cf.get("scheme_dir", None)
+        scheme_dir = cf.get("rbase24", "scheme_dir")
         if scheme_dir is not None:
             return Path(scheme_dir)
 
@@ -38,7 +38,7 @@ class Base24ViewerConfig:
 
     def _config_path(self) -> Path:
         xdg_config = os.environ.get("XDG_CONFIG_HOME", "~/.config")
-        xdg_config_dir = Path(xdg_config)
+        xdg_config_dir = Path(xdg_config).expanduser()
 
         config_dir = xdg_config_dir / "rbase24"
         config_file = config_dir / "config.ini"
