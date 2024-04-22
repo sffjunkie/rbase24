@@ -15,8 +15,8 @@ To specify the location of the color scheme files either...
 Run the `rbase24` command passing an optional filespec to filter the list of
 files.
 
-The filespec will have "\*" and ".yaml" added if necessary so
-"gruvbox", "gruvbox\*" and "gruvbox*.yaml" mean the same.
+The filespec will have `\*` and `.yaml` added if necessary so
+`gruvbox`, `gruvbox\*` and `gruvbox*.yaml` mean the same.
 
 ```bash
 rbase24 primer
