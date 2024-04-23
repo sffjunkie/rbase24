@@ -1,6 +1,6 @@
 [project]
 name = "rbase24"
-version = "0.1.0"
+version = "0.2.0"
 description = "base16/base24 terminal viewer"
 authors = [{ name = "Simon Kennedy", email = "sffjunkie+code@gmail.com" }]
 dependencies = [
@@ -25,10 +25,7 @@ rbase24 = "rbase24.cli:main"
 distribution = true
 
 [tool.pdm.dev-dependencies]
-dev = [
-    "pytest>=8.1.1",
-    "ruff>=0.4.1",
-]
+dev = ["pytest>=8.1.1", "ruff>=0.4.1"]
 
 [tool.pytest.ini_options]
 markers = ["unit", "integration", "asyncio"]
