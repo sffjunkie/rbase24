@@ -19,10 +19,12 @@ class Base24ViewerConfig:
         if scheme_dir is not None:
             return Path(scheme_dir)
 
-        if config_file is not None:
-            cfg = self._read_config(config_file)
-        else:
-            cfg = None
+        cfg = None
+        try:
+            if config_file is not None:
+                cfg = self._read_config(config_file)
+        except IOError:
+            pass
 
         if cfg is None:
             return Base24ViewerConfig.default_scheme_dir()
@@ -38,7 +40,7 @@ class Base24ViewerConfig:
             cf = config_file
 
         if not cf.exists():
-            return None
+            raise IOError(f"Unable to find config file {cf}")
 
         cp = ConfigParser()
         cp.read(cf)
@@ -58,8 +60,6 @@ class Base24ViewerConfig:
 
         config_dir = xdg_config_dir / "rbase24"
         config_file = config_dir / "config.ini"
-        if not config_file.exists():
-            raise IOError(f"Unable to find config.ini in {config_dir}")
         return config_file
 
     @staticmethod
