@@ -62,6 +62,9 @@ def list_schemes(scheme_dir: Path, file_spec: str = "*"):
 
 
 def load_schemes(scheme_dir: Path, file_spec: str) -> SchemeDB:
+    if not scheme_dir.exists():
+        return {}
+
     return {
         scheme_file.name: load_scheme(scheme_file)
         for scheme_file in get_schemes(scheme_dir, file_spec)
