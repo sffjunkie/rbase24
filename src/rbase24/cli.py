@@ -11,6 +11,7 @@ from typing_extensions import Annotated
 from rbase24.scheme import load_schemes
 from rbase24.typedefs import Palette, SchemeDB
 from rbase24.color import hex_string_to_rgb, contrast_color
+from rbase24.config import Base24ViewerConfig
 
 
 def print_schemes(db: SchemeDB):
@@ -60,7 +61,14 @@ def print_palette(palette: Palette):
 
 
 def go(filespec: Annotated[Optional[str], typer.Argument()] = "*"):
-    db = load_schemes(filespec)
+    cfg = Base24ViewerConfig()
+    db = load_schemes(cfg.scheme_dir, filespec)
+    if not db:
+        if filespec == "*":
+            print(f"No schemes found in {cfg.scheme_dir}")
+        else:
+            print(f"No schemes matching '{filespec}' found in {cfg.scheme_dir}")
+        return
     print_schemes(db)
 
 
