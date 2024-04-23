@@ -1,5 +1,5 @@
 {
-  description = "rbase16 a cli command to display base24/base16 palettes";
+  description = "rbase24 a cli command to display base24/base16 palettes";
 
   inputs.pyproject-nix.url = "github:nix-community/pyproject.nix";
   inputs.pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
