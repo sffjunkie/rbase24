@@ -13,7 +13,7 @@ To specify the location of the color scheme files either...
 1. Set the `BASE24_SCHEME_DIR` environment variable to point to the directory
    containing the scheme files.
 2. Create a `config.ini` file in `$HOME/.config/rbase24` with a single entry
-   
+
    ```ini
    [rbase24]
    scheme_dir = "<scheme file directory>"
