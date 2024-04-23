@@ -4,6 +4,10 @@ A command line tool to print base16/base24 color schemes to the terminal.
 
 Best installed using [`pipx`](https://pypi.org/project/pipx/) or your Python installer of choice.
 
+```sh
+pipx install rbase24
+```
+
 To specify the location of the color scheme files either...
 
 1. Set the `BASE24_SCHEME_DIR` environment variable to point to the directory
@@ -19,7 +23,7 @@ Run the `rbase24` command passing an optional filespec to filter the list of
 files.
 
 The filespec will have `*` and `.yaml` added if necessary so
-`gruvbox`, `gruvbox*` and `gruvbox*.yaml` mean the same.
+`gruvbox`, `gruvbox*` and `gruvbox*.yaml` will find the same schemes. Schemes are searhced for in all subdirectories.
 
 ```bash
 rbase24 primer
