@@ -5,37 +5,54 @@ from configparser import ConfigParser
 
 class Base24ViewerConfig:
     def __init__(self, config_file: Path | None = None):
-        self.scheme_dir = self._scheme_dir(config_file)
+        self.config_file = config_file
+        self._scheme_dir: str | None = None
 
-    def _scheme_dir(self, config_file: Path | None = None) -> Path:
+    @property
+    def scheme_dir(self):
+        if self._scheme_dir is None:
+            self._scheme_dir = self._get_scheme_dir(self.config_file)
+        return self._scheme_dir
+
+    def _get_scheme_dir(self, config_file: Path | None = None) -> Path:
         scheme_dir = os.environ.get("BASE24_SCHEME_DIR", None)
         if scheme_dir is not None:
             return Path(scheme_dir)
 
-        default_dir = Path("~/.local/share/base24/schemes").expanduser()
-        cf = self._read_config(config_file)
-        if cf is None:
-            return default_dir
+        if config_file is not None:
+            cfg = self._read_config(config_file)
+        else:
+            cfg = None
 
-        scheme_dir = cf.get("rbase24", "scheme_dir")
+        if cfg is None:
+            return Base24ViewerConfig.default_scheme_dir()
+
+        scheme_dir = cfg.get("rbase24", "scheme_dir")
         if scheme_dir is not None:
             return Path(scheme_dir)
 
-        return default_dir
+    def _read_config(self, config_file: Path | None = None) -> ConfigParser:
+        if config_file is None:
+            cf = Base24ViewerConfig.default_config_path()
+        else:
+            cf = config_file
 
-    def _read_config(self, config_file: Path | None = None):
-        try:
-            if config_file is None:
-                cf = self._config_path()
-            else:
-                cf = config_file
-            cp = ConfigParser()
-            cp.read(cf)
-            return cp
-        except IOError:
+        if not cf.exists():
             return None
 
-    def _config_path(self) -> Path:
+        cp = ConfigParser()
+        cp.read(cf)
+        return cp
+
+    @staticmethod
+    def default_scheme_dir() -> Path:
+        xdg_data_home = Path(
+            os.environ.get("XDG_DATA_HOME", "~/.local/share/")
+        ).expanduser()
+        return xdg_data_home / "tinted-themeing" / "schemes"
+
+    @staticmethod
+    def default_config_path() -> Path:
         xdg_config = os.environ.get("XDG_CONFIG_HOME", "~/.config")
         xdg_config_dir = Path(xdg_config).expanduser()
 
@@ -44,3 +61,7 @@ class Base24ViewerConfig:
         if not config_file.exists():
             raise IOError(f"Unable to find config.ini in {config_dir}")
         return config_file
+
+    @staticmethod
+    def default_config():
+        return dict(scheme_dir=Base24ViewerConfig.default_scheme_dir())

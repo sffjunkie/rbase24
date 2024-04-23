@@ -1,21 +1,22 @@
 import os
 from pathlib import Path
+from typing import Generator
 
 import yaml
 import slugify
 from rbase24.typedefs import ColorScheme, SchemeDB
-from rbase24.config import Base24ViewerConfig
 
 
 def load_scheme(scheme_file: Path) -> ColorScheme:
     with open(scheme_file, "r") as fp:
         data = yaml.load(fp.read(-1), yaml.SafeLoader)
 
-        palette = data.get("palette", None)
-        if palette is None:
+        palette_data = data.get("palette", None)
+        if palette_data is None:
             raise ValueError(
                 f"Scheme file {scheme_file} must contain a 'palette' entry"
             )
+        palette = {name: color.lower() for name, color in palette_data.items()}
 
         system = data.get("system", None)
         if system is None:
@@ -24,7 +25,7 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
             else:
                 system = "base24"
 
-        slug = data.get("slug")
+        slug = data.get("slug", None)
         if slug is None:
             slug = slugify.slugify(scheme_file.stem, only_ascii=True)
 
@@ -42,9 +43,7 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
         )
 
 
-def load_schemes(file_spec: str = "*") -> SchemeDB:
-    config = Base24ViewerConfig()
-
+def get_schemes(scheme_dir: Path, file_spec: str = "*") -> Generator[Path, None, None]:
     if "*" not in file_spec:
         fs = file_spec + "*"
     else:
@@ -53,9 +52,18 @@ def load_schemes(file_spec: str = "*") -> SchemeDB:
     if not fs.endswith(".yaml"):
         fs = fs + ".yaml"
 
-    schemes = {}
-    files = config.scheme_dir.glob(fs)
-    for scheme_file in files:
-        schemes[scheme_file.name] = load_scheme(scheme_file)
+    if not fs.startswith("**/"):
+        fs = "**/" + fs
 
-    return schemes
+    return scheme_dir.glob(fs)
+
+
+def list_schemes(scheme_dir: Path, file_spec: str = "*"):
+    return tuple(get_schemes(scheme_dir, file_spec))
+
+
+def load_schemes(scheme_dir: Path, file_spec: str) -> SchemeDB:
+    return {
+        scheme_file.name: load_scheme(scheme_file)
+        for scheme_file in get_schemes(scheme_dir, file_spec)
+    }
