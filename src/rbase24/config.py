@@ -19,12 +19,13 @@ class Base24ViewerConfig:
         if scheme_dir is not None:
             return Path(scheme_dir)
 
-        cfg = None
+        if config_file is None:
+            config_file = Base24ViewerConfig.default_config_path()
+
         try:
-            if config_file is not None:
-                cfg = self._read_config(config_file)
+            cfg = self._read_config(config_file)
         except IOError:
-            pass
+            cfg = None
 
         if cfg is None:
             return Base24ViewerConfig.default_scheme_dir()
