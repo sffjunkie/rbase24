@@ -39,6 +39,9 @@
             pkgs.just
             pythonEnv
           ];
+          shellHook = ''
+            export PYTHONPATH=${builtins.toString ./src}
+          '';
         };
       }
     ));
