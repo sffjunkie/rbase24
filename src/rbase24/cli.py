@@ -1,8 +1,13 @@
 from itertools import islice
-from typing import Optional
+from math import floor
+from typing import Optional, Iterable
 
 import typer
-from rich.console import Console
+from rich import box
+from rich.align import Align
+from rich.console import Console, group
+from rich.layout import Layout
+from rich.panel import Panel
 from rich.style import Style
 from rich.table import Table
 from rich.text import Text
@@ -14,31 +19,50 @@ from rbase24.color import hex_string_to_rgb, contrast_color
 from rbase24.config import Base24ViewerConfig
 
 
-def print_schemes(db: SchemeDB):
+def print_schemes(db: SchemeDB) -> None:
     console = Console()
-    for name, scheme in db.items():
-        console.print(f"Name: {scheme['name']}")
-        console.print(f"Author: {scheme['author']}")
-        console.print(f"File: {name}")
-        console.print(f"Slug: {scheme['slug']}")
-        console.print(f"System: {scheme['system']}")
+    column_count = int(floor(console.width / 54))
 
-        if scheme["description"]:
-            console.print(f"Description: {scheme['description']}")
+    table = Table.grid(padding=0)
+    for col in range(column_count):
+        table.add_column(str(col))
 
-        console.print()
-        print_palette(scheme["palette"])
-        console.print()
+    chunks = [batch for batch in chunked(db.values(), column_count)]
+
+    for schemes in chunks:
+        panels = []
+        for scheme in schemes:
+            panels.append(
+                Panel(
+                    Scheme(scheme),
+                    width=50,
+                    box=box.MINIMAL,
+                )
+            )
+        table.add_row(*panels)
+
+    console.print(table)
 
 
-def chunked(iterable, n):
-    it = iter(iterable)
-    while batch := tuple(islice(it, n)):
-        yield batch
+@group()
+def Scheme(scheme: dict):
+    yield Text(f"Name: {scheme['name']}")
+    yield Text(f"Author: {scheme['author']}")
+    yield Text(f"File: {scheme['name']}")
+    yield Text(f"Slug: {scheme['slug']}")
+    yield Text(f"System: {scheme['system']}")
+
+    if scheme["description"]:
+        yield Text(f"Description: {scheme['description']}")
+
+    yield Panel(
+        Palette(scheme["palette"]),
+        box=box.MINIMAL,
+    )
 
 
-def print_palette(palette: Palette):
-    console = Console()
+@group()
+def Palette(palette: Palette):
     table = Table.grid(padding=1)
     table.add_column("0")
     table.add_column("2")
@@ -52,12 +76,20 @@ def print_palette(palette: Palette):
         for name, value in chunk:
             rgb = hex_string_to_rgb(f"#{value}")
             contrast = contrast_color(rgb)
-
             style = Style(color=contrast, bgcolor=f"#{value}")
-            items.append(Text(f"\n {name} \n #{value} \n", style=style))
+
+            display_name = name.center(10)
+            display_value = f"#{value}".center(10)
+            items.append(Text(f"\n{display_name}\n{display_value}\n", style=style))
         table.add_row(*items)
-    console.print(table)
-    console.print()
+
+    yield table
+
+
+def chunked(iterable, n) -> Iterable:
+    it = iter(iterable)
+    while batch := tuple(islice(it, n)):
+        yield batch
 
 
 def go(filespec: Annotated[Optional[str], typer.Argument()] = "*"):
