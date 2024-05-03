@@ -40,7 +40,7 @@
             pythonEnv
           ];
           shellHook = ''
-            export PYTHONPATH=${builtins.toString ./src}
+            export PYTHONPATH=src
           '';
         };
       }
