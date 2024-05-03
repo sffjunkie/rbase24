@@ -5,6 +5,7 @@
 import string
 
 RGBColor = tuple[float, float, float]
+DEFAULT_COLOR: RGBColor = (0.5, 0.5, 0.5)
 
 
 def rgb_intensity(rgb: RGBColor):
@@ -22,7 +23,7 @@ def contrast_color(rgb: RGBColor) -> str:
         return "black"
 
 
-def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor | None:
+def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor:
     """Convert from a hex color string of the form `#abc` or `#abcdef` to an
     RGB tuple.
 
@@ -33,11 +34,11 @@ def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor | None:
     :type allow_short:  bool
     """
     if value[0] != "#":
-        return None
+        return DEFAULT_COLOR
 
     for ch in value[1:]:
         if ch not in string.hexdigits:
-            return None
+            return DEFAULT_COLOR
 
     if len(value) == 7:
         # The following to_iterable function is based on the
@@ -55,9 +56,9 @@ def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor | None:
             return tuple([int("%s%s" % (t, t), 16) / 255 for t in value[1:]])
 
     else:
-        return None
+        return DEFAULT_COLOR
 
     try:
         return to_iterable()
     except ValueError:
-        return None
+        return DEFAULT_COLOR

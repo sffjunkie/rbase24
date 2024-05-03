@@ -32,7 +32,7 @@ def print_schemes(db: SchemeDB) -> None:
         for scheme in schemes:
             panels.append(
                 Panel(
-                    Scheme(scheme),
+                    SchemeHeader(scheme),
                     width=50,
                     box=box.MINIMAL,
                 )
@@ -43,7 +43,7 @@ def print_schemes(db: SchemeDB) -> None:
 
 
 @group()
-def Scheme(scheme: dict):
+def SchemeHeader(scheme: dict):
     yield Text(f"Name: {scheme['name']}")
     yield Text(f"Author: {scheme['author']}")
     yield Text(f"File: {scheme['name']}")
@@ -54,13 +54,13 @@ def Scheme(scheme: dict):
         yield Text(f"Description: {scheme['description']}")
 
     yield Panel(
-        Palette(scheme["palette"]),
+        SchemePalette(scheme["palette"]),
         box=box.MINIMAL,
     )
 
 
 @group()
-def Palette(palette: Palette):
+def SchemePalette(palette: Palette):
     table = Table.grid(padding=1)
     table.add_column("0")
     table.add_column("2")
@@ -91,6 +91,9 @@ def chunked(iterable, n) -> Iterable:
 
 
 def go(filespec: Annotated[Optional[str], typer.Argument()] = "*"):
+    if filespec is None:
+        filespec = "*"
+
     cfg = Base24ViewerConfig()
     db = load_schemes(cfg.scheme_dir, filespec)
     if not db:

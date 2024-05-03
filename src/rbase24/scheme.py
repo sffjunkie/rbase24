@@ -3,7 +3,7 @@ from typing import Generator
 
 import yaml
 import slugify
-from rbase24.typedefs import ColorScheme, SchemeDB
+from rbase24.typedefs import ColorScheme, SchemeDB, Palette
 
 
 def load_scheme(scheme_file: Path) -> ColorScheme:
@@ -15,11 +15,10 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
             raise ValueError(
                 f"Scheme file {scheme_file} must contain a 'palette' entry"
             )
-        palette = {name: color.lower() for name, color in palette_data.items()}
 
         system = data.get("system", None)
         if system is None:
-            if len(palette) == 16:
+            if len(palette_data) == 16:
                 system = "base16"
             else:
                 system = "base24"
@@ -38,7 +37,7 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
             slug=slug,
             description=description,
             variant=variant,
-            palette=palette,
+            palette=palette_data,
         )
 
 
@@ -61,7 +60,7 @@ def list_schemes(scheme_dir: Path, file_spec: str = "*"):
     return tuple(get_schemes(scheme_dir, file_spec))
 
 
-def load_schemes(scheme_dir: Path, file_spec: str) -> SchemeDB:
+def load_schemes(scheme_dir: Path, file_spec: str = "*") -> SchemeDB:
     if not scheme_dir.exists():
         return {}
 
