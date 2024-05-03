@@ -4,9 +4,7 @@ from typing import Optional, Iterable
 
 import typer
 from rich import box
-from rich.align import Align
 from rich.console import Console, group
-from rich.layout import Layout
 from rich.panel import Panel
 from rich.style import Style
 from rich.table import Table
