@@ -26,7 +26,7 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
 
         slug = data.get("slug", None)
         if slug is None:
-            slug = slugify.slugify(scheme_file.stem, only_ascii=True)
+            slug = slugify.slugify(scheme_file.stem)
 
         description = data.get("description", "")
         variant = data.get("variant", "unknown")
