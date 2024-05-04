@@ -1,9 +1,11 @@
 from pathlib import Path
 
-from rbase24.scheme import load_scheme, list_schemes
+import pytest
 from rbase24.config import Base24ViewerConfig
+from rbase24.scheme import list_schemes, load_scheme
 
 
+@pytest.mark.unit
 def test_scheme_load_base16_scheme():
     cf = Path(__file__).parent / "config.ini"
     cfg = Base24ViewerConfig(cf)
@@ -13,6 +15,7 @@ def test_scheme_load_base16_scheme():
     assert "fdf0ed" == scheme["palette"]["base00"]
 
 
+@pytest.mark.unit
 def test_scheme_load_base24_scheme():
     cf = Path(__file__).parent / "config.ini"
     cfg = Base24ViewerConfig(cf)
@@ -22,10 +25,11 @@ def test_scheme_load_base24_scheme():
     assert "524fb9" == scheme["palette"]["base17"]
 
 
+@pytest.mark.unit
 def test_scheme_list_schemes():
     cf = Path(__file__).parent / "config.ini"
     cfg = Base24ViewerConfig(cf)
     scheme_dir = cfg.scheme_dir
     scheme_dir = Path(__file__).parent / scheme_dir
 
-    assert 9 == len(list_schemes(scheme_dir))
+    assert 10 == len(list_schemes(scheme_dir))
