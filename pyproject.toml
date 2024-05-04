@@ -17,6 +17,9 @@ license = { text = "MIT" }
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
+[project.urls]
+Homepage = "https://github.com/sffjunkie/rbase24"
+Issues = "https://github.com/sffjunkie/rbase24/issues"
 
 [project.scripts]
 rbase24 = "rbase24.cli:main"
