@@ -16,9 +16,11 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
                 f"Scheme file {scheme_file} must contain a 'palette' entry"
             )
 
+        palette: Palette = {k: v.lower() for k, v in palette_data.items()}  # type: ignore
+
         system = data.get("system", None)
         if system is None:
-            if len(palette_data) == 16:
+            if len(palette) == 16:
                 system = "base16"
             else:
                 system = "base24"
@@ -37,7 +39,7 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
             slug=slug,
             description=description,
             variant=variant,
-            palette=palette_data,
+            palette=palette,
         )
 
 
