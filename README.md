@@ -31,7 +31,7 @@ rbase24 primer
 
 Displays the following
 
-![console output](https://github.com/sffjunkie/rbase24/blob/main/src/docs/swappy-20240422-174952.png)
+![console output](https://github.com/sffjunkie/rbase24/blob/main/src/docs/rbase24_gruvbox.png)
 
 - Uses the [rich](https://rich.readthedocs.io/en/latest/) library for the fancy formattting.
 - Uses [typer](https://typer.tiangolo.com/) for the almost non-existent cli handling.
