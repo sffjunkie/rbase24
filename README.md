@@ -23,7 +23,7 @@ Run the `rbase24` command passing an optional filespec to filter the list of
 files.
 
 The filespec will have `*` and `.yaml` added if necessary so
-`gruvbox`, `gruvbox*` and `gruvbox*.yaml` will find the same schemes. Schemes are searhced for in all subdirectories.
+`gruvbox`, `gruvbox*` and `gruvbox*.yaml` will find the same schemes. Schemes are searched for in all subdirectories.
 
 ```bash
 rbase24 gruvbox-li
