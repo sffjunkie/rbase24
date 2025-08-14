@@ -35,3 +35,13 @@ Displays the following
 
 - Uses the [rich](https://rich.readthedocs.io/en/latest/) library for the fancy formattting.
 - Uses [typer](https://typer.tiangolo.com/) for the almost non-existent cli handling.
+
+## Nix
+
+If using `nix` then the tool can be run without adding to your system with
+
+```sh
+nix run github:sffjunkie/rbase24 -- gruvbox-li
+```
+
+to display the same output as above.
