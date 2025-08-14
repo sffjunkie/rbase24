@@ -44,14 +44,14 @@ def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor:
         # The following to_iterable function is based on the
         # :func:`grouper` function in the Python standard library docs
         # http://docs.python.org/library/itertools.html
-        def to_iterable():
+        def to_iterable() -> RGBColor:
             # pylint: disable=missing-docstring
             args = [iter(value[1:])] * 2
             return tuple([int("%s%s" % t, 16) / 255 for t in zip(*args)])
 
     elif len(value) == 4 and allow_short:
 
-        def to_iterable():
+        def to_iterable() -> RGBColor:
             # pylint: disable=missing-docstring
             return tuple([int("%s%s" % (t, t), 16) / 255 for t in value[1:]])
 
