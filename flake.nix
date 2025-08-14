@@ -1,58 +1,119 @@
 {
-  description = "rbase24 a cli command to display base24/base16 palettes";
+  description = "CLI Base16 ciolor scheme viewer";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-  inputs.pyproject-nix.url = "github:nix-community/pyproject.nix";
-  inputs.pyproject-nix.inputs.nixpkgs.follows = "nixpkgs";
-
-  nixConfig = {
-    bash-prompt = ''\n\[\033[1;34m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\\$\[\033[0m\] '';
-  };
-
-  outputs = {
-    nixpkgs,
-    pyproject-nix,
-    ...
-  }: let
-    inherit (nixpkgs) lib;
-
-    project = pyproject-nix.lib.project.loadPyproject {
-      projectRoot = ./.;
+    pyproject-nix = {
+      url = "github:pyproject-nix/pyproject.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    forAllSystems = function:
-      nixpkgs.lib.genAttrs [
-        "aarch64-linux"
-        "x86_64-darwin"
-        "x86_64-linux"
-      ] (system: function nixpkgs.legacyPackages.${system});
-  in {
-    devShells = forAllSystems (pkgs: (
-      let
-        python = pkgs.python3;
-        arg = project.renderers.withPackages {inherit python;};
-        pythonEnv = python.withPackages arg;
-      in {
-        default = pkgs.mkShell {
-          packages = [
-            pkgs.pdm
-            pkgs.ruff
-            pkgs.just
-            pythonEnv
-          ];
-          shellHook = ''
-            export PYTHONPATH=src
-          '';
-        };
-      }
-    ));
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    packages = forAllSystems (pkgs: (
-      let
-        python = pkgs.python3;
-        attrs = project.renderers.buildPythonPackage {inherit python;};
-      in {
-        default = python.pkgs.buildPythonApplication attrs;
-      }
-    ));
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
+
+  outputs =
+    {
+      self,
+      nixpkgs,
+      uv2nix,
+      pyproject-nix,
+      pyproject-build-systems,
+      ...
+    }:
+    let
+      forAllSystems = nixpkgs.lib.genAttrs [
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
+
+      inherit (nixpkgs) lib;
+
+      workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ./.; };
+
+      overlay = workspace.mkPyprojectOverlay {
+        sourcePreference = "wheel";
+      };
+
+      python = pkgs.python312;
+      pkgs = nixpkgs.legacyPackages.x86_64-linux.pkgs;
+
+      pythonSet =
+        # Use base package set from pyproject.nix builders
+        (pkgs.callPackage pyproject-nix.build.packages {
+          inherit python;
+        }).overrideScope
+          (
+            lib.composeManyExtensions [
+              pyproject-build-systems.overlays.default
+              overlay
+            ]
+          );
+    in
+    {
+      packages = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pythonSet.mkVirtualEnv "rbase24-env" workspace.deps.default;
+        }
+      );
+
+      apps = forAllSystems (system: {
+        default = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/rbase24";
+          meta = {
+            description = "Nix Generation Control";
+            homepage = "https://github.com/sffjunkie/rbase24";
+            license = lib.licenses.asl20;
+          };
+        };
+      });
+
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            packages = [
+              python
+              pkgs.uv
+              pkgs.ty
+              pkgs.ruff
+
+              self.packages.${system}.default
+            ];
+            env = {
+              # Prevent uv from managing Python downloads
+              UV_PYTHON_DOWNLOADS = "never";
+              # Force uv to use nixpkgs Python interpreter
+              UV_PYTHON = python.interpreter;
+            }
+            // lib.optionalAttrs pkgs.stdenv.isLinux {
+              # Python libraries often load native shared objects using dlopen(3).
+              # Setting LD_LIBRARY_PATH makes the dynamic library loader aware of libraries without using RPATH for lookup.
+              LD_LIBRARY_PATH = lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
+            };
+            shellHook = ''
+              unset PYTHONPATH
+            '';
+          };
+        }
+      );
+    };
 }
