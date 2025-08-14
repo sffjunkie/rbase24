@@ -72,7 +72,9 @@ def SchemePalette(palette: Palette):
     for chunk in chunks:
         items = []
         for name, value in chunk:
-            rgb = hex_string_to_rgb(f"#{value}")
+            if not value[0] == "#":
+                value = f"#{value}"
+            rgb = hex_string_to_rgb(value)
             contrast = contrast_color(rgb)
             style = Style(color=contrast, bgcolor=f"#{value}")
 
