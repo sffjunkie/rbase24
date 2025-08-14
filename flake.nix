@@ -76,7 +76,7 @@
           type = "app";
           program = "${self.packages.${system}.default}/bin/rbase24";
           meta = {
-            description = "Nix Generation Control";
+            description = "CLI Base16 ciolor scheme viewer";
             homepage = "https://github.com/sffjunkie/rbase24";
             license = lib.licenses.asl20;
           };
