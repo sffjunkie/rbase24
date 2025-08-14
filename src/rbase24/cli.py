@@ -78,8 +78,8 @@ def SchemePalette(palette: Palette):
             contrast = contrast_color(rgb)
             style = Style(color=contrast, bgcolor=value)
 
-            display_name = name.center(10)
-            display_value = f"#{value}".center(10)
+            display_name = f"{name:^10}"
+            display_value = f"{value:^10}"
             items.append(Text(f"\n{display_name}\n{display_value}\n", style=style))
         table.add_row(*items)
 
