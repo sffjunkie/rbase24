@@ -1,4 +1,5 @@
 from typing import TypedDict, NotRequired
+from pathlib import Path
 
 Color = str
 
@@ -31,6 +32,7 @@ class Palette(TypedDict):
 
 
 class ColorScheme(TypedDict):
+    file: str
     name: str
     author: str
     system: NotRequired[str]

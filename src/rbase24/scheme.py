@@ -33,6 +33,7 @@ def load_scheme(scheme_file: Path) -> ColorScheme:
         variant = data.get("variant", "unknown")
 
         return ColorScheme(
+            file=scheme_file.name,
             name=data["name"],
             author=data["author"],
             system=system,

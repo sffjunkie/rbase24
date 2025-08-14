@@ -46,8 +46,8 @@ def print_schemes(db: SchemeDB) -> None:
 def SchemeHeader(scheme: dict):
     yield Text(f"Name: {scheme['name']}")
     yield Text(f"Author: {scheme['author']}")
-    yield Text(f"File: {scheme['name']}")
     yield Text(f"Slug: {scheme['slug']}")
+    yield Text(f"File: {scheme['file']}")
     yield Text(f"System: {scheme['system']}")
 
     if scheme["description"]:
