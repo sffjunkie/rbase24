@@ -97,6 +97,10 @@ def go(filespec: Annotated[Optional[str], typer.Argument()] = "*"):
         filespec = "*"
 
     cfg = Base24ViewerConfig()
+    if cfg.scheme_dir is None or not cfg.scheme_dir.exists():
+        print("No base16 scheme directory configured. Exiting")
+        return
+
     db = load_schemes(cfg.scheme_dir, filespec)
     if not db:
         if filespec == "*":
