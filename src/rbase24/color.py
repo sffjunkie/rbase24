@@ -47,13 +47,13 @@ def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor:
         def to_iterable() -> RGBColor:
             # pylint: disable=missing-docstring
             args = [iter(value[1:])] * 2
-            return tuple([int("%s%s" % t, 16) / 255 for t in zip(*args)])
+            return tuple([int("%s%s" % t, 16) / 255 for t in zip(*args)])[:3]  # type: ignore
 
     elif len(value) == 4 and allow_short:
 
         def to_iterable() -> RGBColor:
             # pylint: disable=missing-docstring
-            return tuple([int("%s%s" % (t, t), 16) / 255 for t in value[1:]])
+            return tuple([int("%s%s" % (t, t), 16) / 255 for t in value[1:]])[:3]  # type: ignore
 
     else:
         return DEFAULT_COLOR
