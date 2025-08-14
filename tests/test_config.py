@@ -26,6 +26,8 @@ def test_config_default_config():
 def test_config_local():
     cf = Path(__file__).parent / "config.ini"
     cfg = Base24ViewerConfig(cf)
+    assert cfg is not None
+    assert cfg.scheme_dir is not None
     assert cfg.scheme_dir.name == "schemes"
 
 
