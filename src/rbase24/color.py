@@ -34,7 +34,7 @@ def hex_string_to_rgb(value: str, allow_short: bool = True) -> RGBColor:
     :type allow_short:  bool
     """
     if value[0] != "#":
-        return DEFAULT_COLOR
+        value = f"#{value}"
 
     for ch in value[1:]:
         if ch not in string.hexdigits:
