@@ -6,7 +6,7 @@ from configparser import ConfigParser
 class Base24ViewerConfig:
     def __init__(self, config_file: Path | None = None):
         self.config_file = config_file
-        self._scheme_dir: str | None = None
+        self._scheme_dir: Path | None = None
 
     @property
     def scheme_dir(self):
@@ -14,7 +14,7 @@ class Base24ViewerConfig:
             self._scheme_dir = self._get_scheme_dir(self.config_file)
         return self._scheme_dir
 
-    def _get_scheme_dir(self, config_file: Path | None = None) -> Path:
+    def _get_scheme_dir(self, config_file: Path | None = None) -> Path | None:
         scheme_dir = os.environ.get("BASE24_SCHEME_DIR", None)
         if scheme_dir is not None:
             return Path(scheme_dir)
@@ -33,6 +33,7 @@ class Base24ViewerConfig:
         scheme_dir = cfg.get("rbase24", "scheme_dir")
         if scheme_dir is not None:
             return Path(scheme_dir)
+        return None
 
     def _read_config(self, config_file: Path | None = None) -> ConfigParser:
         if config_file is None:
