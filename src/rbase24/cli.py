@@ -76,7 +76,7 @@ def SchemePalette(palette: Palette):
                 value = f"#{value}"
             rgb = hex_string_to_rgb(value)
             contrast = contrast_color(rgb)
-            style = Style(color=contrast, bgcolor=f"#{value}")
+            style = Style(color=contrast, bgcolor=value)
 
             display_name = name.center(10)
             display_value = f"#{value}".center(10)
