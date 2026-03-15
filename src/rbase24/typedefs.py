@@ -1,5 +1,5 @@
 from typing import TypedDict, NotRequired
-from pathlib import Path
+from enum import StrEnum
 
 Color = str
 
@@ -31,14 +31,24 @@ class Palette(TypedDict):
     base17: NotRequired[Color]
 
 
+class SchemeKeys(StrEnum):
+    FILE = "file"
+    SCHEME = "scheme"
+    AUTHOR = "author"
+    SYSTEM = "system"
+    SLUG = "slug"
+    DESCRIPTION = "description"
+    VARIANT = "variant"
+
+
 class ColorScheme(TypedDict):
     file: str
-    name: str
+    scheme: str
     author: str
-    system: NotRequired[str]
-    slug: NotRequired[str]
-    description: NotRequired[str]
-    variant: NotRequired[str]
+    system: str
+    slug: str
+    description: str
+    variant: str
     palette: Palette
 
 
