@@ -1,6 +1,7 @@
+from operator import itemgetter
 from itertools import islice
 from math import floor
-from typing import Optional, Iterable
+from typing import Annotated, Iterable
 
 import typer
 from rich import box
@@ -9,15 +10,12 @@ from rich.panel import Panel
 from rich.style import Style
 from rich.table import Table
 from rich.text import Text
-from typing_extensions import Annotated
 
-from rbase24.scheme import load_schemes
-from rbase24.typedefs import Palette, SchemeDB
-from rbase24.color import hex_string_to_rgb, contrast_color
-from rbase24.config import Base24ViewerConfig
+from rbase24.color import contrast_color, hex_string_to_rgb
+from rbase24.typedefs import Palette, ColorScheme, SchemeKeys
 
 
-def print_schemes(db: SchemeDB) -> None:
+def print_schemes(filtered_schemes: list[ColorScheme]) -> None:
     console = Console()
     column_count = int(floor(console.width / 54))
 
@@ -25,7 +23,7 @@ def print_schemes(db: SchemeDB) -> None:
     for col in range(column_count):
         table.add_column(str(col))
 
-    chunks = [batch for batch in chunked(db.values(), column_count)]
+    chunks = [batch for batch in chunked(filtered_schemes, column_count)]
 
     for schemes in chunks:
         panels = []
@@ -44,14 +42,14 @@ def print_schemes(db: SchemeDB) -> None:
 
 @group()
 def SchemeHeader(scheme: dict):
-    yield Text(f"Name: {scheme['name']}")
-    yield Text(f"Author: {scheme['author']}")
-    yield Text(f"Slug: {scheme['slug']}")
-    yield Text(f"File: {scheme['file']}")
-    yield Text(f"System: {scheme['system']}")
+    yield Text(f"Scheme: {scheme[SchemeKeys.SCHEME]}")
+    yield Text(f"Author: {scheme[SchemeKeys.AUTHOR]}")
+    yield Text(f"Slug: {scheme[SchemeKeys.SLUG]}")
+    yield Text(f"File: {scheme[SchemeKeys.FILE]}")
+    yield Text(f"System: {scheme[SchemeKeys.SYSTEM]}")
 
     if scheme["description"]:
-        yield Text(f"Description: {scheme['description']}")
+        yield Text(f"Description: {scheme[SchemeKeys.DESCRIPTION]}")
 
     yield Panel(
         SchemePalette(scheme["palette"]),
@@ -92,24 +90,43 @@ def chunked(iterable, n) -> Iterable:
         yield batch
 
 
-def go(filespec: Annotated[Optional[str], typer.Argument()] = "*"):
-    if filespec is None:
-        filespec = "*"
-
-    cfg = Base24ViewerConfig()
-    if cfg.scheme_dir is None or not cfg.scheme_dir.exists():
-        print("No base16 scheme directory configured. Exiting")
-        return
-
-    db = load_schemes(cfg.scheme_dir, filespec)
-    if not db:
-        if filespec == "*":
-            print(f"No schemes found in {cfg.scheme_dir}")
-        else:
-            print(f"No schemes matching '{filespec}' found in {cfg.scheme_dir}")
-        return
-    print_schemes(db)
+app = typer.Typer()
 
 
-def main():
-    typer.run(go)
+@app.command()
+def show(
+    ctx: typer.Context,
+    spec: Annotated[str, typer.Argument()] = "*",
+    key: Annotated[
+        SchemeKeys,
+        typer.Option(
+            "--key",
+            "-k",
+            help="Filter by key type.",
+            metavar="KEY",
+        ),
+    ] = SchemeKeys.FILE,
+):
+    """Show Schemes"""
+    if spec is None:
+        spec = "*"
+
+    db = ctx.obj["context"].db
+
+    get_by = key.value
+    values = db.values()
+    if spec != "*":
+        filtered_data = filter(
+            lambda item: item[get_by].lower().find(spec.lower()) != -1, values
+        )
+    else:
+        filtered_data = values
+
+    if get_by != "file":
+        sort_key = itemgetter(get_by, "file")
+    else:
+        sort_key = itemgetter("file")
+
+    sorted_data = sorted(filtered_data, key=sort_key)
+
+    print_schemes(sorted_data)
