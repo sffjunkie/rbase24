@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 from rbase24.config import Base24ViewerConfig
-from rbase24.scheme import list_schemes, load_scheme
+from rbase24.db import list_schemes, load_scheme, load
 
 
 @pytest.mark.unit
@@ -35,4 +35,5 @@ def test_scheme_list_schemes():
     assert scheme_dir is not None
     scheme_dir = Path(__file__).parent / scheme_dir
 
-    assert 10 == len(list_schemes(scheme_dir))
+    scheme_db = load(scheme_dir)
+    assert 10 == len(list_schemes(scheme_db))
